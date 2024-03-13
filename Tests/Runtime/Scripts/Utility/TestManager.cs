@@ -15,6 +15,7 @@ namespace OpenAi.Api.Test
             if(_apiGateway != null)
             {
                 Destroy(_apiGateway.gameObject);
+                _apiGateway = null;
             }
             
             _apiGateway = OpenAiApiGatewayV1.Instance;
@@ -23,6 +24,38 @@ namespace OpenAi.Api.Test
             _apiGateway.InitializeApi();
 
             return _apiGateway.Api;
+        }
+
+        public void LogTest(string testDescription, bool result)
+        {
+            if (result)
+            {
+                Debug.Log($"[SUCCESS] {testDescription}");
+            }
+            else
+            {
+                Debug.Log($"[FAIL] {testDescription}");
+            }
+        }
+
+        public bool TestApiResultSuccess(ApiResult result)
+        {
+            bool resultIsNotNull = result != null;
+            LogTest("Result is not null", resultIsNotNull);
+            if (!resultIsNotNull) return false;
+
+            bool resultIsSuccess = result.IsSuccess;
+            LogTest("Result is success", resultIsSuccess);
+            return resultIsNotNull && resultIsSuccess;
+        }
+
+        public bool TestApiResultHasResponse<T>(ApiResult<T> result)
+        {
+            if (!TestApiResultSuccess(result)) return false;
+
+            bool resultDataIsNotNull = result.Result != null;
+            LogTest("Result data is not null", resultDataIsNotNull);
+            return resultDataIsNotNull;
         }
     }
 }
